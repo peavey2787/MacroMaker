@@ -10,12 +10,17 @@ using System.Windows.Forms;
 
 namespace MacroMaker.Classes
 {
-    internal class MacroActions
+    public class MacroActions
     {
         WinHooks winHooks;
+        RadialMenu radialMenu;
+        NotificationManager notificationManager;
+        public bool AutoRun { get; set; }
+
         internal MacroActions(WinHooks winHooks) 
         {
             this.winHooks = winHooks;
+            notificationManager = new NotificationManager();
         }
 
         internal void PerformAction(InputButton inputButton)
@@ -48,17 +53,24 @@ namespace MacroMaker.Classes
                 winHooks.BlockMouseButtonIdsDown.Add(inputButton.DownId);
                 winHooks.BlockMouseButtonIdsUp.Add(inputButton.UpId);
                 Point mouseLocation = Cursor.Position; // Get the current mouse position
-                using (RadialMenu radialMenu = new RadialMenu(mouseLocation))
+
+                using (RadialMenu radialMenu = new RadialMenu(mouseLocation, this))
                 {
                     if (radialMenu != null && !radialMenu.IsDisposed)
                     {
+                        // Disable auto run
+                        if (AutoRun)
+                        {
+                            AutoRun = false;
+                            notificationManager.ShowNotification("Auto Run Disabled");
+                            Keyboard.PressKeyUp((byte)Keys.LShiftKey);
+                        }
                         radialMenu.ShowDialog();
-                        radialMenu.BringToFront();
                     }
                 }
             }
             else // Default
-            {                
+            {
 
             }
         }

@@ -48,6 +48,10 @@
             this.label4 = new System.Windows.Forms.Label();
             this.pictureBox4 = new System.Windows.Forms.PictureBox();
             this.textBox4 = new System.Windows.Forms.TextBox();
+            this.comboBox1 = new System.Windows.Forms.ComboBox();
+            this.comboBox2 = new System.Windows.Forms.ComboBox();
+            this.comboBox3 = new System.Windows.Forms.ComboBox();
+            this.comboBox4 = new System.Windows.Forms.ComboBox();
             this.panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.panel5.SuspendLayout();
@@ -64,7 +68,7 @@
             // 
             // textBox1
             // 
-            this.textBox1.Location = new System.Drawing.Point(26, 78);
+            this.textBox1.Location = new System.Drawing.Point(25, 76);
             this.textBox1.Name = "textBox1";
             this.textBox1.Size = new System.Drawing.Size(127, 20);
             this.textBox1.TabIndex = 0;
@@ -72,6 +76,7 @@
             // panel1
             // 
             this.panel1.BackColor = System.Drawing.Color.Beige;
+            this.panel1.Controls.Add(this.comboBox1);
             this.panel1.Controls.Add(this.pictureBox1);
             this.panel1.Controls.Add(this.panel5);
             this.panel1.Controls.Add(this.textBox1);
@@ -115,6 +120,7 @@
             // panel2
             // 
             this.panel2.BackColor = System.Drawing.Color.Beige;
+            this.panel2.Controls.Add(this.comboBox2);
             this.panel2.Controls.Add(this.panel6);
             this.panel2.Controls.Add(this.pictureBox2);
             this.panel2.Controls.Add(this.textBox2);
@@ -165,6 +171,7 @@
             // panel3
             // 
             this.panel3.BackColor = System.Drawing.Color.Beige;
+            this.panel3.Controls.Add(this.comboBox3);
             this.panel3.Controls.Add(this.panel7);
             this.panel3.Controls.Add(this.pictureBox3);
             this.panel3.Controls.Add(this.textBox3);
@@ -215,6 +222,7 @@
             // panel4
             // 
             this.panel4.BackColor = System.Drawing.Color.Beige;
+            this.panel4.Controls.Add(this.comboBox4);
             this.panel4.Controls.Add(this.panel8);
             this.panel4.Controls.Add(this.pictureBox4);
             this.panel4.Controls.Add(this.textBox4);
@@ -261,6 +269,38 @@
             this.textBox4.Name = "textBox4";
             this.textBox4.Size = new System.Drawing.Size(127, 20);
             this.textBox4.TabIndex = 0;
+            // 
+            // comboBox1
+            // 
+            this.comboBox1.FormattingEnabled = true;
+            this.comboBox1.Location = new System.Drawing.Point(26, 102);
+            this.comboBox1.Name = "comboBox1";
+            this.comboBox1.Size = new System.Drawing.Size(126, 21);
+            this.comboBox1.TabIndex = 9;
+            // 
+            // comboBox2
+            // 
+            this.comboBox2.FormattingEnabled = true;
+            this.comboBox2.Location = new System.Drawing.Point(34, 102);
+            this.comboBox2.Name = "comboBox2";
+            this.comboBox2.Size = new System.Drawing.Size(126, 21);
+            this.comboBox2.TabIndex = 10;
+            // 
+            // comboBox3
+            // 
+            this.comboBox3.FormattingEnabled = true;
+            this.comboBox3.Location = new System.Drawing.Point(34, 101);
+            this.comboBox3.Name = "comboBox3";
+            this.comboBox3.Size = new System.Drawing.Size(126, 21);
+            this.comboBox3.TabIndex = 11;
+            // 
+            // comboBox4
+            // 
+            this.comboBox4.FormattingEnabled = true;
+            this.comboBox4.Location = new System.Drawing.Point(27, 101);
+            this.comboBox4.Name = "comboBox4";
+            this.comboBox4.Size = new System.Drawing.Size(126, 21);
+            this.comboBox4.TabIndex = 11;
             // 
             // RadialMenu
             // 
@@ -323,5 +363,9 @@
         private System.Windows.Forms.Panel panel6;
         private System.Windows.Forms.Panel panel7;
         private System.Windows.Forms.Panel panel8;
+        private System.Windows.Forms.ComboBox comboBox1;
+        private System.Windows.Forms.ComboBox comboBox2;
+        private System.Windows.Forms.ComboBox comboBox3;
+        private System.Windows.Forms.ComboBox comboBox4;
     }
 }
