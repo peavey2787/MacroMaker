@@ -30,21 +30,23 @@
         {
             this.ButtonLinkLabel = new System.Windows.Forms.LinkLabel();
             this.BindPanel = new System.Windows.Forms.Panel();
+            this.label2 = new System.Windows.Forms.Label();
             this.ButtonNameLabel = new System.Windows.Forms.Label();
             this.ConfirmButton = new System.Windows.Forms.Button();
             this.label1 = new System.Windows.Forms.Label();
             this.ButtonPressedLabel = new System.Windows.Forms.Label();
             this.ButtonComboBox = new System.Windows.Forms.ComboBox();
-            this.ButtonCheckBox = new System.Windows.Forms.CheckBox();
             this.ButtonPanel = new System.Windows.Forms.Panel();
+            this.StatusPictureBox = new System.Windows.Forms.PictureBox();
             this.BindPanel.SuspendLayout();
             this.ButtonPanel.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.StatusPictureBox)).BeginInit();
             this.SuspendLayout();
             // 
             // ButtonLinkLabel
             // 
             this.ButtonLinkLabel.AutoSize = true;
-            this.ButtonLinkLabel.Location = new System.Drawing.Point(23, 17);
+            this.ButtonLinkLabel.Location = new System.Drawing.Point(67, 24);
             this.ButtonLinkLabel.Name = "ButtonLinkLabel";
             this.ButtonLinkLabel.Size = new System.Drawing.Size(69, 13);
             this.ButtonLinkLabel.TabIndex = 0;
@@ -55,20 +57,29 @@
             // 
             // BindPanel
             // 
+            this.BindPanel.Controls.Add(this.label2);
             this.BindPanel.Controls.Add(this.ButtonNameLabel);
             this.BindPanel.Controls.Add(this.ConfirmButton);
             this.BindPanel.Controls.Add(this.label1);
             this.BindPanel.Controls.Add(this.ButtonPressedLabel);
-            this.BindPanel.Location = new System.Drawing.Point(262, 318);
+            this.BindPanel.Location = new System.Drawing.Point(287, 318);
             this.BindPanel.Name = "BindPanel";
-            this.BindPanel.Size = new System.Drawing.Size(251, 120);
+            this.BindPanel.Size = new System.Drawing.Size(192, 131);
             this.BindPanel.TabIndex = 1;
             this.BindPanel.Visible = false;
+            // 
+            // label2
+            // 
+            this.label2.Location = new System.Drawing.Point(25, 47);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(85, 32);
+            this.label2.TabIndex = 5;
+            this.label2.Text = "Press Down and Release Here";
             // 
             // ButtonNameLabel
             // 
             this.ButtonNameLabel.AutoSize = true;
-            this.ButtonNameLabel.Location = new System.Drawing.Point(90, 7);
+            this.ButtonNameLabel.Location = new System.Drawing.Point(25, 10);
             this.ButtonNameLabel.Name = "ButtonNameLabel";
             this.ButtonNameLabel.Size = new System.Drawing.Size(69, 13);
             this.ButtonNameLabel.TabIndex = 4;
@@ -76,7 +87,7 @@
             // 
             // ConfirmButton
             // 
-            this.ConfirmButton.Location = new System.Drawing.Point(91, 92);
+            this.ConfirmButton.Location = new System.Drawing.Point(28, 99);
             this.ConfirmButton.Name = "ConfirmButton";
             this.ConfirmButton.Size = new System.Drawing.Size(60, 24);
             this.ConfirmButton.TabIndex = 2;
@@ -87,7 +98,7 @@
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(96, 38);
+            this.label1.Location = new System.Drawing.Point(133, 10);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(50, 13);
             this.label1.TabIndex = 1;
@@ -96,7 +107,7 @@
             // ButtonPressedLabel
             // 
             this.ButtonPressedLabel.AutoSize = true;
-            this.ButtonPressedLabel.Location = new System.Drawing.Point(97, 61);
+            this.ButtonPressedLabel.Location = new System.Drawing.Point(134, 30);
             this.ButtonPressedLabel.Name = "ButtonPressedLabel";
             this.ButtonPressedLabel.Size = new System.Drawing.Size(49, 13);
             this.ButtonPressedLabel.TabIndex = 0;
@@ -111,7 +122,7 @@
             "Default",
             "Radial Menu",
             "None"});
-            this.ButtonComboBox.Location = new System.Drawing.Point(12, 33);
+            this.ButtonComboBox.Location = new System.Drawing.Point(56, 40);
             this.ButtonComboBox.Name = "ButtonComboBox";
             this.ButtonComboBox.Size = new System.Drawing.Size(85, 21);
             this.ButtonComboBox.TabIndex = 5;
@@ -119,28 +130,27 @@
             this.ButtonComboBox.Visible = false;
             this.ButtonComboBox.SelectedIndexChanged += new System.EventHandler(this.ButtonComboBox_SelectedIndexChanged);
             // 
-            // ButtonCheckBox
-            // 
-            this.ButtonCheckBox.AutoSize = true;
-            this.ButtonCheckBox.Location = new System.Drawing.Point(12, 60);
-            this.ButtonCheckBox.Name = "ButtonCheckBox";
-            this.ButtonCheckBox.Size = new System.Drawing.Size(91, 17);
-            this.ButtonCheckBox.TabIndex = 11;
-            this.ButtonCheckBox.Text = "Double click?";
-            this.ButtonCheckBox.UseVisualStyleBackColor = true;
-            this.ButtonCheckBox.Visible = false;
-            this.ButtonCheckBox.CheckedChanged += new System.EventHandler(this.ButtonCheckBox_CheckedChanged);
-            // 
             // ButtonPanel
             // 
             this.ButtonPanel.AutoScroll = true;
+            this.ButtonPanel.Controls.Add(this.StatusPictureBox);
             this.ButtonPanel.Controls.Add(this.ButtonComboBox);
-            this.ButtonPanel.Controls.Add(this.ButtonCheckBox);
             this.ButtonPanel.Controls.Add(this.ButtonLinkLabel);
             this.ButtonPanel.Location = new System.Drawing.Point(0, 0);
             this.ButtonPanel.Name = "ButtonPanel";
             this.ButtonPanel.Size = new System.Drawing.Size(800, 312);
             this.ButtonPanel.TabIndex = 12;
+            // 
+            // StatusPictureBox
+            // 
+            this.StatusPictureBox.BackgroundImage = global::MacroMaker.Properties.Resources.check_mark;
+            this.StatusPictureBox.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
+            this.StatusPictureBox.Location = new System.Drawing.Point(18, 24);
+            this.StatusPictureBox.Name = "StatusPictureBox";
+            this.StatusPictureBox.Size = new System.Drawing.Size(32, 31);
+            this.StatusPictureBox.TabIndex = 6;
+            this.StatusPictureBox.TabStop = false;
+            this.StatusPictureBox.Visible = false;
             // 
             // MouseBindings
             // 
@@ -157,6 +167,7 @@
             this.BindPanel.PerformLayout();
             this.ButtonPanel.ResumeLayout(false);
             this.ButtonPanel.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.StatusPictureBox)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -169,8 +180,9 @@
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Button ConfirmButton;
         private System.Windows.Forms.ComboBox ButtonComboBox;
-        private System.Windows.Forms.CheckBox ButtonCheckBox;
         private System.Windows.Forms.Label ButtonNameLabel;
         private System.Windows.Forms.Panel ButtonPanel;
+        private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.PictureBox StatusPictureBox;
     }
 }

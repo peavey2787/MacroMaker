@@ -38,13 +38,7 @@
         internal void LoadDefaults()
         {
             Buttons = new List<InputButton>();
-
-            var inputButton = new InputButton("Mouse Move");
-            inputButton.DownId = 512;
-            inputButton.UpId = 512;
-            Buttons.Add(inputButton);
-
-            // Default buttons
+            Buttons.Add(new InputButton("Mouse Move"));
             Buttons.Add(new InputButton("Left Click"));
             Buttons.Add(new InputButton("Right Click"));
             Buttons.Add(new InputButton("Wheel Up"));

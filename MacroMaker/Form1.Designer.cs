@@ -38,6 +38,7 @@
             this.label2 = new System.Windows.Forms.Label();
             this.ActiveMouseMacroLabel = new System.Windows.Forms.Label();
             this.ActiveKeyboardMacroLabel = new System.Windows.Forms.Label();
+            this.EditRadialMenuButton = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // MouseBindingsButton
@@ -131,11 +132,22 @@
             this.ActiveKeyboardMacroLabel.TabIndex = 11;
             this.ActiveKeyboardMacroLabel.Text = "None";
             // 
+            // EditRadialMenuButton
+            // 
+            this.EditRadialMenuButton.Location = new System.Drawing.Point(674, 36);
+            this.EditRadialMenuButton.Name = "EditRadialMenuButton";
+            this.EditRadialMenuButton.Size = new System.Drawing.Size(96, 22);
+            this.EditRadialMenuButton.TabIndex = 12;
+            this.EditRadialMenuButton.Text = "Edit Radial Menu";
+            this.EditRadialMenuButton.UseVisualStyleBackColor = true;
+            this.EditRadialMenuButton.Click += new System.EventHandler(this.EditRadialMenuButton_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(800, 450);
+            this.Controls.Add(this.EditRadialMenuButton);
             this.Controls.Add(this.ActiveKeyboardMacroLabel);
             this.Controls.Add(this.ActiveMouseMacroLabel);
             this.Controls.Add(this.label2);
@@ -165,6 +177,7 @@
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Label ActiveMouseMacroLabel;
         private System.Windows.Forms.Label ActiveKeyboardMacroLabel;
+        private System.Windows.Forms.Button EditRadialMenuButton;
     }
 }
 

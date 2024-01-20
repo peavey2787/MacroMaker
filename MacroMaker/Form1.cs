@@ -20,6 +20,8 @@ namespace MacroMaker
         private WinHooks winHooks;
         Mouse mouse;
         MacroActions macroActions;
+
+        #region Open/Close
         public Form1()
         {
             InitializeComponent();
@@ -34,6 +36,11 @@ namespace MacroMaker
 
             macroActions = new MacroActions(winHooks);
         }
+        private void Form1_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            winHooks.Dispose();
+        }
+        #endregion
 
         private void HandleMouseButtonDown(int button)
         {
@@ -72,6 +79,7 @@ namespace MacroMaker
         }
 
 
+        // Mouse Bindings
         private void MouseBindingsButton_Click(object sender, EventArgs e)
         {
             MouseBindings mouseBindings = new MouseBindings(winHooks);
@@ -79,16 +87,18 @@ namespace MacroMaker
             mouseBindings.SetMouse(mouse);
             mouseBindings.ShowDialog();            
         }
-
         private void MouseBindings_FormClosing(object sender, FormClosingEventArgs e)
         {
             var form = sender as MouseBindings;
             mouse = form.GetMouse();            
         }
 
-        private void Form1_FormClosing(object sender, FormClosingEventArgs e)
+        
+        // Edit Radial Menu
+        private void EditRadialMenuButton_Click(object sender, EventArgs e)
         {
-            winHooks.Dispose();
+            EditRadialMenu editRadialMenu = new EditRadialMenu();
+            editRadialMenu.Show();
         }
     }
 }

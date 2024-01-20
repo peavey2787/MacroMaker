@@ -74,10 +74,11 @@ namespace MacroMaker.Classes
                 // Determine which button was pressed
                 int buttonNumber = 0;
 
-                if (hookStruct.mouseData == 0)
-                    buttonNumber = parsedWParam;
-                else
+                if ((int)hookStruct.mouseData > 0)
                     buttonNumber = (int)hookStruct.mouseData;
+                else if (parsedWParam > 0)
+                    buttonNumber = parsedWParam;
+
 
                 if (buttonNumber != 0)
                     MouseButtonDown?.Invoke(buttonNumber);
@@ -87,7 +88,7 @@ namespace MacroMaker.Classes
                 {
                     if (BlockMouseButtonIdsDown.Contains(buttonNumber))
                         BlockMouseButtonIdsDown.Remove(buttonNumber);
-                    else
+                    else if (BlockMouseButtonIdsUp.Contains(buttonNumber))
                         BlockMouseButtonIdsUp.Remove(buttonNumber);
 
                     // Alter the mouse data or perform other actions here
@@ -95,10 +96,21 @@ namespace MacroMaker.Classes
 
                     // Convert the modified structure back to IntPtr
                     IntPtr modifiedLParam = Marshal.AllocHGlobal(Marshal.SizeOf(hookStruct));
-                    Marshal.StructureToPtr(hookStruct, modifiedLParam, false);
+                    Marshal.StructureToPtr(hookStruct, modifiedLParam, true);
 
                     // Return the modified IntPtr to block the default action
                     return modifiedLParam;
+
+
+                    // Modify lParam to indicate that the button is not pressed
+                    hookStruct.flags |= 0x1; // Set injected flag (LLMHF_INJECTED) to prevent re-injection
+                    hookStruct.mouseData = 0; // Set mouseData to 0 to indicate no button pressed
+
+                    // Convert the modified structure back to IntPtr
+                    Marshal.StructureToPtr(hookStruct, lParam, true);
+
+                    // Allow the event to propagate
+                    return CallNextHookEx(mouseHookId, -1, wParam, lParam);
                 }
             }
 

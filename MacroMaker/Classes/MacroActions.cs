@@ -63,9 +63,9 @@ namespace MacroMaker.Classes
                         {
                             AutoRun = false;
                             notificationManager.ShowNotification("Auto Run Disabled");
-                            Keyboard.PressKeyUp((byte)Keys.LShiftKey);
                         }
                         radialMenu.ShowDialog();
+                        radialMenu.MakeTopMost();
                     }
                 }
             }

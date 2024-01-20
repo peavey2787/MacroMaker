@@ -9,12 +9,16 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using MacroMaker.Classes;
 using NAudio.CoreAudioApi;
+using Newtonsoft.Json;
 using static MacroMaker.Forms.RadialAction;
+using Button = System.Windows.Forms.Button;
+using ComboBox = System.Windows.Forms.ComboBox;
 
 namespace MacroMaker.Forms
 {
     public partial class RadialMenu : Form
     {
+        #region Variables
         MacroActions macroActions;
         NotificationManager notificationManager;
         AudioDeviceManager audioDeviceManager;
@@ -34,6 +38,13 @@ namespace MacroMaker.Forms
         {
             return isMenuOpen;
         }
+        internal void MakeTopMost()
+        {
+            WindowManager.MakeWindowTopMost(Handle);
+        }
+        #endregion
+
+        #region Open/Close
         public RadialMenu(Point mouseLocation, MacroActions macroActions)
         {            
             InitializeComponent();
@@ -58,7 +69,6 @@ namespace MacroMaker.Forms
 
             InitializeRadialMenu();
         }
-
         private void InitializeRadialMenu()
         {
             FormBorderStyle = FormBorderStyle.None;
@@ -83,29 +93,24 @@ namespace MacroMaker.Forms
             Paint += RadialButtonMenu_Paint;
 
             SetStyle(ControlStyles.OptimizedDoubleBuffer | ControlStyles.ResizeRedraw | ControlStyles.AllPaintingInWmPaint, true);
-            UpdateStyles();
-            BringToFront();
-            Focus();
-            WindowManager.BringWindowToFront(Handle);
+            UpdateStyles();            
         }
-
-
         private void RadialMenu_Load(object sender, EventArgs e)
         {
             var options = AppSettings.Load<RadialOptions>("RadialOptions");
             if (options == null)
             {
-                options = GetDefaultRadialOptions();
+                options = RadialOptions.GetDefaultRadialOptions();
             }
 
             SetRadialOptions(options);            
-        }
-        // Close
+        }        
         private void RadialMenu_FormClosing(object sender, FormClosingEventArgs e)
         {
             isMenuOpen = false;
+            WindowManager.UnsetTopMost(Handle);
         }
-
+        #endregion
 
 
         // Paint
@@ -138,8 +143,7 @@ namespace MacroMaker.Forms
         }
 
 
-
-        // Radial Options
+        #region Radial Options
         private void SetRadialOptions(RadialOptions radialOptions)
         {
             ClearRadialOptions();
@@ -149,16 +153,18 @@ namespace MacroMaker.Forms
             {
                 foreach (AControl aControl in radialOption.Controls)
                 {
-                    Control optionControl = ControlFactory.CreateControl(aControl.Type);
-                    optionControl = aControl.CopyProperties(optionControl);
-
                     string panelName = "panel" + panelIndex;
                     Panel targetPanel = this.Controls.Find(panelName, true).FirstOrDefault() as Panel;
 
                     if (targetPanel != null)
                     {
-                        InvokeMethod(aControl.Action, optionControl);
-                        targetPanel.Controls.Add(optionControl);
+                        if (Enum.TryParse<Actions>(aControl.Name, out Actions action))
+                        {
+                            var control = ControlFactory.CreateControl(aControl.Type);
+                            control = aControl.CopyPropertiesTo(control);
+                            InvokeMethod(action, control);
+                            targetPanel.Controls.Add(control);
+                        }
                     }
                 }
 
@@ -172,70 +178,11 @@ namespace MacroMaker.Forms
             panel3.Controls.Clear();
             panel4.Controls.Clear();
         }
-        private RadialOptions GetDefaultRadialOptions()
-        {
-            var options = new RadialOptions();
-            
-            // Option 1
-            var defaultRadialOption = new RadialOption();
-            var aControl = new AControl();
-            aControl.Size = new Size(100, 21);
-            aControl.Location = new Point(0, 0);            
-            aControl.Type = "ComboBox";
-            aControl.Action = RadialAction.Actions.ChangeDefaultAudioPlayback;
-            defaultRadialOption.Controls.Add(aControl);            
-            options.Options.Add(defaultRadialOption);
 
-            // Option 2
-            defaultRadialOption = new RadialOption();
-            aControl = new AControl();
-            aControl.Size = new Size(100, 21);
-            aControl.Location = new Point(panel2.Width - aControl.Size.Width, 0);            
-            aControl.Type = "ComboBox";
-            aControl.Action = RadialAction.Actions.ChangeDefaultAudioMic;
-            defaultRadialOption.Controls.Add(aControl);            
-            options.Options.Add(defaultRadialOption);
-
-            // Option 3
-            defaultRadialOption = new RadialOption();
-            aControl = new AControl();
-            aControl.Size = new Size(75, 21);
-            aControl.Location = new Point(panel3.Width - aControl.Size.Width, panel3.Height - aControl.Size.Height);            
-            aControl.Type = "CheckBox";
-            aControl.Text = "Auto Run";
-            aControl.Action = RadialAction.Actions.AutoRun;
-            defaultRadialOption.Controls.Add(aControl);            
-            options.Options.Add(defaultRadialOption);
-
-            // Option 4
-            defaultRadialOption = new RadialOption();
-            aControl = new AControl();
-            aControl.Size = new Size(75, 25);
-            aControl.Location = new Point(0, panel3.Height - aControl.Size.Height);
-            aControl.Type = "Button";
-            aControl.Text = "Edge";
-            aControl.Action = RadialAction.Actions.OpenApp;
-            aControl.Tag = "https://www.google.com";
-            defaultRadialOption.Controls.Add(aControl);            
-            options.Options.Add(defaultRadialOption);
-
-            return options;
-        }
-        public void InvokeMethod(Actions action, Control optionControl)
-        {
-            string methodName = Enum.GetName(typeof(Actions), action);
-            var methodInfo = this.GetType().GetMethod(methodName, BindingFlags.NonPublic | BindingFlags.Instance);
-
-            if (methodInfo != null)
-            {
-                methodInfo.Invoke(this, new object[] { optionControl });
-            }
-        }
+        #endregion
 
 
-
-
-        // Actions
+        #region Actions
 
         // Audio
         private void ChangeDefaultAudioPlayback(Control control)
@@ -399,9 +346,10 @@ namespace MacroMaker.Forms
                 Close();
             };
         }
+        #endregion
 
 
-
+        #region Mouse Events
         // Mouse move/down
         private void RadialButtonMenu_MouseMove(object sender, MouseEventArgs e)
         {
@@ -444,49 +392,6 @@ namespace MacroMaker.Forms
                 }
             }
         }
-
-
-
-        // Slice Selection
-        private void ShowSlice(int sliceIndex)
-        {
-            if (panel1 == null) return;
-            switch (sliceIndex)
-            {
-                case 0:
-                    panel1.Visible = true;
-                    panel2.Visible = false;
-                    panel3.Visible = false;
-                    panel4.Visible = false;
-                    break;
-                case 1:
-                    panel1.Visible = false;
-                    panel2.Visible = true;
-                    panel3.Visible = false;
-                    panel4.Visible = false;
-                    break;
-                case 2:
-                    panel1.Visible = false;
-                    panel2.Visible = false;
-                    panel3.Visible = true;
-                    panel4.Visible = false;
-                    break;
-                case 3:
-                    panel1.Visible = false;
-                    panel2.Visible = false;
-                    panel3.Visible = false;
-                    panel4.Visible = true;
-                    break;
-                default:
-                    panel1.Visible = false;
-                    panel2.Visible = false;
-                    panel3.Visible = false;
-                    panel4.Visible = false;
-                    // in Dead Zone
-                    break;
-            }
-        }
-
 
 
         // Slice Clicks
@@ -553,10 +458,10 @@ namespace MacroMaker.Forms
         {
             HandleSlice4Click();
         }
+        #endregion
 
 
-
-        // Helpers
+        #region Helpers
         private int GetAngle(Point point, Point center)
         {
             int deltaX = point.X - center.X;
@@ -572,6 +477,55 @@ namespace MacroMaker.Forms
 
             return (int)angle;
         }
+        private void ShowSlice(int sliceIndex)
+        {
+            if (panel1 == null) return;
+            switch (sliceIndex)
+            {
+                case 0:
+                    panel1.Visible = true;
+                    panel2.Visible = false;
+                    panel3.Visible = false;
+                    panel4.Visible = false;
+                    break;
+                case 1:
+                    panel1.Visible = false;
+                    panel2.Visible = true;
+                    panel3.Visible = false;
+                    panel4.Visible = false;
+                    break;
+                case 2:
+                    panel1.Visible = false;
+                    panel2.Visible = false;
+                    panel3.Visible = true;
+                    panel4.Visible = false;
+                    break;
+                case 3:
+                    panel1.Visible = false;
+                    panel2.Visible = false;
+                    panel3.Visible = false;
+                    panel4.Visible = true;
+                    break;
+                default:
+                    panel1.Visible = false;
+                    panel2.Visible = false;
+                    panel3.Visible = false;
+                    panel4.Visible = false;
+                    // in Dead Zone
+                    break;
+            }
+        }
+        public void InvokeMethod(Actions action, Control optionControl)
+        {
+            string methodName = Enum.GetName(typeof(Actions), action);
+            var methodInfo = this.GetType().GetMethod(methodName, BindingFlags.NonPublic | BindingFlags.Instance);
+
+            if (methodInfo != null)
+            {
+                methodInfo.Invoke(this, new object[] { optionControl });
+            }
+        }
+        #endregion
     }
 
 
@@ -583,6 +537,7 @@ namespace MacroMaker.Forms
             ChangeDefaultAudioMic,
             OpenApp,
             AutoRun,
+            None,
         }
     }
     internal class RadialOptions
@@ -591,6 +546,58 @@ namespace MacroMaker.Forms
         public RadialOptions() 
         {
             Options = new List<RadialOption>();
+        }
+
+        public static RadialOptions GetDefaultRadialOptions()
+        {
+            var options = new RadialOptions();
+            int panelWidth = 194;
+            int panelHeight = 194;
+
+            var defaultRadialOption = new RadialOption();
+            defaultRadialOption.Name = "panel4";
+            var aControl = new AControl();
+            aControl.Size = new Size(100, 21);
+            aControl.Location = new Point(0, 0);
+            aControl.Name = RadialAction.Actions.ChangeDefaultAudioPlayback.ToString();
+            aControl.Type = "ComboBox";
+            defaultRadialOption.Controls.Add(aControl);
+            options.Options.Add(defaultRadialOption);
+
+            defaultRadialOption = new RadialOption();
+            defaultRadialOption.Name = "panel3";
+            aControl = new AControl();
+            aControl.Size = new Size(100, 21);
+            aControl.Location = new Point(panelWidth - aControl.Size.Width, 0);
+            aControl.Name = RadialAction.Actions.ChangeDefaultAudioMic.ToString();
+            aControl.Type = "ComboBox";
+            defaultRadialOption.Controls.Add(aControl);
+            options.Options.Add(defaultRadialOption);
+
+            defaultRadialOption = new RadialOption();
+            defaultRadialOption.Name = "panel2";
+            aControl = new AControl();
+            aControl.Size = new Size(75, 21);
+            aControl.Location = new Point(panelWidth - aControl.Size.Width, panelHeight - aControl.Size.Height);
+            aControl.Text = "Auto Run";
+            aControl.Type = "CheckBox";
+            aControl.Name = RadialAction.Actions.AutoRun.ToString();
+            defaultRadialOption.Controls.Add(aControl);
+            options.Options.Add(defaultRadialOption);
+
+            defaultRadialOption = new RadialOption();
+            defaultRadialOption.Name = "panel1";
+            aControl = new AControl();
+            aControl.Size = new Size(75, 25);
+            aControl.Location = new Point(0, panelHeight - aControl.Size.Height);
+            aControl.Text = "Edge";
+            aControl.Name = RadialAction.Actions.OpenApp.ToString();
+            aControl.Type = "Button";
+            aControl.Tag = "https://www.google.com";
+            defaultRadialOption.Controls.Add(aControl);
+            options.Options.Add(defaultRadialOption);
+
+            return options;
         }
     }
     internal class RadialOption
@@ -604,60 +611,98 @@ namespace MacroMaker.Forms
             Controls = new List<AControl>();
         }
     }
-    internal class AControl
+    public class AControl
     {
-        public RadialAction.Actions Action { get; set; }
-        public string Type { get; set; }
         public string Name { get; set; }
+        public string Type { get; set; }        
         public object Tag { get; set; }
         public Point Location { get; set; }
         public Size Size { get; set; }
-        public object Value { get; set; }
         public List<object> Items { get; set; }
         public string Text { get; set; }
         public Image Image { get; set; }
         public Image BackgroundImage { get; set; }
         public Color Color { get; set; }
         public Color BackgroundColor { get; set; }
-        public int TextSize { get; set; }
+        public float FontSize { get; set; }
 
 
-        internal Control CopyProperties(Control optionControl)
+        internal void SetPropertiesFrom(Control control)
         {
             foreach (var property in typeof(AControl).GetProperties())
             {
                 // Check if the property exists in the actual control
-                var controlProperty = optionControl.GetType().GetProperty(property.Name);
+                var controlProperty = control.GetType().GetProperty(property.Name);
 
                 if (controlProperty != null)
                 {
                     // Check if the control property has a getter and setter
                     if (controlProperty.CanRead && controlProperty.CanWrite)
                     {
-                        // Copy the value from the AControl property to the control property
-                        controlProperty.SetValue(optionControl, property.GetValue(this));
+                        // Handle FontSize separately
+                        if (property.Name == "Font")
+                        {
+                            Font font = (Font)controlProperty.GetValue(control);
+                            this.FontSize = font.Size;
+                        }
+                        else
+                        {
+                            // Copy the value from the Control property to the AControl property
+                            property.SetValue(this, controlProperty.GetValue(control));
+                        }
+                    }
+                }
+            }
+            Type = control.GetType().Name;
+        }
+
+        internal Control CopyPropertiesTo(Control control)
+        {
+            foreach (var property in typeof(AControl).GetProperties())
+            {
+                // Check if the property exists in the actual control
+                var controlProperty = control.GetType().GetProperty(property.Name);
+
+                if (controlProperty != null)
+                {
+                    // Check if the control property has a getter and setter
+                    if (controlProperty.CanRead && controlProperty.CanWrite)
+                    {
+                        // Handle FontSize separately
+                        if (property.Name == "Font")
+                        {
+                            controlProperty.SetValue(control.Font, new Font(control.Font.FontFamily, this.FontSize));
+                        }
+                        else
+                        {
+                            // Copy the value from the AControl property to the control property
+                            controlProperty.SetValue(control, property.GetValue(this));
+                        }
                     }
                 }
             }
 
-            return optionControl; // Return the modified instance
+            return control;
         }
-    }
 
+    }
 
     public class ControlFactory
     {
         private static readonly Dictionary<string, Func<Control>> ControlTypeMap = new Dictionary<string, Func<Control>>
         {
-            { "Button", () => new Button() },
-            { "TextBox", () => new TextBox() },
+            { "Button", () => new System.Windows.Forms.Button() },
+            { "TextBox", () => new System.Windows.Forms.TextBox() },
             { "CheckBox", () => new CheckBox() },
-            { "ComboBox", () => new ComboBox() },
+            { "ComboBox", () => new System.Windows.Forms.ComboBox() },
             { "RadioButton", () => new RadioButton() },
+            { "Label", () => new Label() },
         };
 
         public static Control CreateControl(string controlTypeName)
         {
+            if (string.IsNullOrWhiteSpace(controlTypeName))
+                throw new ArgumentException("control type cannot be null", nameof(controlTypeName));
             if (ControlTypeMap.TryGetValue(controlTypeName, out var controlFactory))
             {
                 return controlFactory.Invoke();

@@ -19,6 +19,8 @@ namespace MacroMaker.Forms
         Mouse mouse;
         InputButton buttonToSave;
         int mouseMoveId = 0;
+        int mouseLeftBtnDownId = 0;
+        int mouseLeftBtnUpId = 0;
         bool buttonDown = true;
         bool toggle = false;
         bool appControl = false;
@@ -39,12 +41,12 @@ namespace MacroMaker.Forms
         private void MouseBindings_Load(object sender, EventArgs e)
         {
             appControl = true; // Prevent triggering index/check changed events
-            if(mouse.Buttons == null) mouse.LoadDefaults();
+            if(mouse.Buttons == null) mouse.LoadDefaults();            
             foreach (InputButton button in mouse.Buttons)
             {
                 CreateButtonControls(button);
-            }           
-            
+            }
+            AddNewButton();
             appControl = false;
         }
         private void MouseBindings_FormClosing(object sender, FormClosingEventArgs e)
@@ -59,6 +61,8 @@ namespace MacroMaker.Forms
         {
             buttonToSave.DownId = buttonHistory[0];
             buttonToSave.UpId = buttonHistory[1];
+            if (buttonToSave.DownId == buttonToSave.UpId)
+                buttonToSave.PreventDoubleClick = true;
 
             CloseBindingsPanel();
         }
@@ -66,6 +70,9 @@ namespace MacroMaker.Forms
         {
             InputButton mouseMoveButton = mouse.Buttons.Find(b => b.Name.Equals("Mouse Move"));
             mouseMoveId = mouseMoveButton.DownId;
+            InputButton mouseClickButton = mouse.Buttons.Find(b => b.Name.Equals("Left Click"));
+            mouseLeftBtnDownId = mouseClickButton.DownId;
+            mouseLeftBtnUpId = mouseClickButton.UpId;
 
             ButtonNameLabel.Text = buttonToSave.Name;
             BindPanel.Visible = true;
@@ -79,6 +86,16 @@ namespace MacroMaker.Forms
             winHooks.MouseButtonDown -= HandleMouseButtonDown;
             toggle = !toggle;
             buttonDown = true;
+
+            if(buttonToSave.Name == "Mouse Move")
+            {
+                mouseMoveId = buttonToSave.DownId;
+            }
+            else if (buttonToSave.Name == "Left Click")
+            {
+                mouseLeftBtnDownId = buttonToSave.DownId;
+                mouseLeftBtnUpId = buttonToSave.UpId;
+            }
         }
         private void ToggleBindingsPanel(InputButton buttonToSave)
         {
@@ -111,8 +128,11 @@ namespace MacroMaker.Forms
             // Ignore the mouse move button id if not assigning it
             if (buttonToSave.Name != "Mouse Move" && button == mouseMoveId)
                 return;
-                       
-            ButtonPressedLabel.Text = button.ToString();
+
+            // Hide left mouse button id if not assigning it
+            if (buttonToSave.Name != "Left Click" && (button != mouseLeftBtnDownId || button != mouseLeftBtnUpId)
+                || buttonToSave.Name == "Left Click")
+                ButtonPressedLabel.Text = button.ToString();
                         
             AssignButtonIds(button);
             
@@ -128,6 +148,7 @@ namespace MacroMaker.Forms
             }
         }
         #endregion
+
 
         #region Button Controls
         // Button controls interaction
@@ -195,21 +216,23 @@ namespace MacroMaker.Forms
             // Create copies of the original controls
             ComboBox newComboBox = new ComboBox();
             LinkLabel newLinkLabel = new LinkLabel();
-            CheckBox newCheckBox = new CheckBox();
+            PictureBox newPictureBox = new PictureBox();            
 
             // Copy properties from the original controls to the new controls
             CopyControlProperties(ButtonComboBox, newComboBox);
             CopyControlProperties(ButtonLinkLabel, newLinkLabel);
-            CopyControlProperties(ButtonCheckBox, newCheckBox);
+            CopyControlProperties(StatusPictureBox, newPictureBox);
+
+            newPictureBox.SizeMode = PictureBoxSizeMode.Zoom;
 
             newComboBox.Visible = true;
             newLinkLabel.Visible = true;
-            newCheckBox.Visible = true;
+            newPictureBox.Visible = true;
 
             // Set name
             newComboBox.Name = inputButton.Name + "ComboBox";
             newLinkLabel.Name = inputButton.Name + "LinkLabel";
-            newCheckBox.Name = inputButton.Name + "CheckBox";
+            newPictureBox.Name = inputButton.Name + "PictureBox";
 
             // Set text
             newLinkLabel.Text = inputButton.Name;
@@ -217,24 +240,26 @@ namespace MacroMaker.Forms
             // Set selected action/macro          
             newComboBox.SelectedItem = inputButton.Action;
 
-            // Set checkbox            
-            newCheckBox.Checked = inputButton.PreventDoubleClick;
-
             // Set the positions
+            newPictureBox.Location = new Point(startX - StatusPictureBox.Width, startY);
             newLinkLabel.Location = new Point(startX, startY);
             startY += margin;
             newComboBox.Location = new Point(startX, startY);
-            startY += margin;
-            newCheckBox.Location = new Point(startX, startY);
             startY += margin * 2;
+
+            // Set image
+            if (inputButton.DownId != 0)
+                newPictureBox.Image = Properties.Resources.check_mark;
+            else if (inputButton.Name == "Mouse Move" && inputButton.DownId == 0)
+                newPictureBox.Image = Properties.Resources.redWarning;
+            else
+                newPictureBox.Image = Properties.Resources.warning;            
 
             // Add the copied controls to the form
             ButtonPanel.Controls.Add(newLinkLabel);
             if (inputButton.Name != "Mouse Move")
-            {
                 ButtonPanel.Controls.Add(newComboBox);
-                ButtonPanel.Controls.Add(newCheckBox);
-            }
+            ButtonPanel.Controls.Add(newPictureBox);
 
             if(rowCount == rows)
             {
@@ -249,6 +274,11 @@ namespace MacroMaker.Forms
             // Copy common properties
             destinationControl.Bounds = sourceControl.Bounds;
             destinationControl.Enabled = sourceControl.Enabled;
+            destinationControl.Visible = sourceControl.Visible;
+            destinationControl.BackColor = sourceControl.BackColor;
+            destinationControl.ForeColor = sourceControl.ForeColor;
+            destinationControl.Location = sourceControl.Location;
+            destinationControl.Size = sourceControl.Size;            
             destinationControl.Visible = sourceControl.Visible;
 
             // Special handling for copying items from ComboBox
@@ -278,11 +308,64 @@ namespace MacroMaker.Forms
             if (sourceControl is LinkLabel sourceLinkLabel && destinationControl is LinkLabel destinationLinkLabel)
             {
                 destinationLinkLabel.Text = sourceLinkLabel.Text;
+                destinationLinkLabel.AutoSize = sourceLinkLabel.AutoSize;
 
                 destinationLinkLabel.LinkClicked += ButtonLinkLabel_LinkClicked;
             }
+
+            // Special handling for picturebox
+            if (sourceControl is PictureBox sourcePictureBox && destinationControl is PictureBox destinationPictureBox)
+            {
+                destinationPictureBox.Image = sourcePictureBox.Image;
+                destinationPictureBox.SizeMode = sourcePictureBox.SizeMode;
+                destinationPictureBox.BackgroundImageLayout = sourcePictureBox.BackgroundImageLayout;
+
+            }
         }
+        private void AddNewButton()
+        {
+            // Create TextBox for user to enter button name
+            TextBox newTextBox = new TextBox();
+            newTextBox.Visible = true;
+            newTextBox.Size = new Size(100, 20);
+            newTextBox.Location = new Point(startX, startY);
+
+            // Create Button for adding the new button
+            Button addButton = new Button();
+            addButton.Text = "Add";
+            addButton.Size = new Size(50, 20);
+            addButton.Location = new Point(startX + 110, startY);
+            addButton.Click += (sender, e) => AddButtonFromTextBox(newTextBox.Text);
+
+            // Add the TextBox and Button to the form
+            ButtonPanel.Controls.Add(newTextBox);
+            ButtonPanel.Controls.Add(addButton);
+
+            // Increment startY for the next set of controls
+            startY += margin * 2;
+        }
+
+        private void AddButtonFromTextBox(string buttonName)
+        {
+            // Validate if the button name is not empty
+            if (string.IsNullOrEmpty(buttonName.Trim()))
+            {
+                MessageBox.Show("Please enter a valid button name.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            // Create a new InputButton with the specified name
+            InputButton newButton = new InputButton(buttonName);
+
+            // Add the new button to the mouse.Buttons collection
+            mouse.Buttons.Add(newButton);
+
+            // Create controls for the new button and add them to the form
+            CreateButtonControls(newButton);
+        }
+
         #endregion
+
 
     }
 }
