@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
             this.MouseBindingsButton = new System.Windows.Forms.Button();
             this.ActiveMouseLabel = new System.Windows.Forms.Label();
             this.ActiveKeyboardLabel = new System.Windows.Forms.Label();
@@ -158,8 +159,9 @@
             this.Controls.Add(this.ActiveKeyboardLabel);
             this.Controls.Add(this.ActiveMouseLabel);
             this.Controls.Add(this.MouseBindingsButton);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "Form1";
-            this.Text = "Form1";
+            this.Text = "Macro Maker";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Form1_FormClosing);
             this.ResumeLayout(false);
             this.PerformLayout();

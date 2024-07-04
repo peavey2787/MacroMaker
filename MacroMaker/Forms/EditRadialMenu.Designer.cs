@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(EditRadialMenu));
             this.panel1 = new System.Windows.Forms.Panel();
             this.OpenAppButton = new System.Windows.Forms.Button();
             this.panel2 = new System.Windows.Forms.Panel();
@@ -44,6 +45,7 @@
             this.TextTextBox = new System.Windows.Forms.TextBox();
             this.label3 = new System.Windows.Forms.Label();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.ControlNameLabel = new System.Windows.Forms.Label();
             this.label7 = new System.Windows.Forms.Label();
             this.DecreaseWidthButton = new System.Windows.Forms.Button();
             this.IncreaseWidthButton = new System.Windows.Forms.Button();
@@ -59,7 +61,6 @@
             this.AudioMicButton = new System.Windows.Forms.Button();
             this.AddTextButton = new System.Windows.Forms.Button();
             this.SaveButton = new System.Windows.Forms.Button();
-            this.ControlNameLabel = new System.Windows.Forms.Label();
             this.groupBox1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -231,6 +232,15 @@
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Selected Control";
             // 
+            // ControlNameLabel
+            // 
+            this.ControlNameLabel.AutoSize = true;
+            this.ControlNameLabel.Location = new System.Drawing.Point(73, 155);
+            this.ControlNameLabel.Name = "ControlNameLabel";
+            this.ControlNameLabel.Size = new System.Drawing.Size(97, 13);
+            this.ControlNameLabel.TabIndex = 27;
+            this.ControlNameLabel.Text = "Control Name Here";
+            // 
             // label7
             // 
             this.label7.AutoSize = true;
@@ -375,15 +385,6 @@
             this.SaveButton.UseVisualStyleBackColor = true;
             this.SaveButton.Click += new System.EventHandler(this.SaveButton_Click);
             // 
-            // ControlNameLabel
-            // 
-            this.ControlNameLabel.AutoSize = true;
-            this.ControlNameLabel.Location = new System.Drawing.Point(73, 155);
-            this.ControlNameLabel.Name = "ControlNameLabel";
-            this.ControlNameLabel.Size = new System.Drawing.Size(97, 13);
-            this.ControlNameLabel.TabIndex = 27;
-            this.ControlNameLabel.Text = "Control Name Here";
-            // 
             // EditRadialMenu
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -399,6 +400,7 @@
             this.Controls.Add(this.panel2);
             this.Controls.Add(this.OpenAppButton);
             this.Controls.Add(this.panel1);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "EditRadialMenu";
             this.Text = "EditRadialMenu";
             this.Load += new System.EventHandler(this.EditRadialMenu_Load);
