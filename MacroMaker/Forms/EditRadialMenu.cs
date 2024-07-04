@@ -337,8 +337,8 @@ namespace MacroMaker.Forms
                 // Combine custom colors and standard colors
                 colorDialog.CustomColors = customColorsOle.Concat(standardColors).ToArray();
 
-
-                colorDialog.Color = startingColor;
+                if(startingColor != new Color())
+                    colorDialog.Color = startingColor;
 
                 DialogResult result = colorDialog.ShowDialog();
 

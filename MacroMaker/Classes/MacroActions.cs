@@ -54,24 +54,29 @@ namespace MacroMaker.Classes
                 winHooks.BlockMouseButtonIdsUp.Add(inputButton.UpId);
                 Point mouseLocation = Cursor.Position; // Get the current mouse position
 
-                using (RadialMenu radialMenu = new RadialMenu(mouseLocation, this))
+                
+                if (radialMenu == null || radialMenu.IsDisposed)
                 {
-                    if (radialMenu != null && !radialMenu.IsDisposed)
+                    // Not open
+                    radialMenu = new RadialMenu(mouseLocation, this);
+                    radialMenu.Show();
+                }
+                else
+                {
+                    // Open
+
+                    // Disable auto run
+                    if (AutoRun)
                     {
-                        // Disable auto run
-                        if (AutoRun)
-                        {
-                            AutoRun = false;
-                            notificationManager.ShowNotification("Auto Run Disabled");
-                        }
-                        radialMenu.ShowDialog();
-                        radialMenu.MakeTopMost();
+                        AutoRun = false;
+                        notificationManager.ShowNotification("Auto Run Disabled");
                     }
                 }
             }
             else // Default
             {
-
+                winHooks.BlockMouseButtonIdsDown = new List<int>();
+                winHooks.BlockMouseButtonIdsUp = new List<int>();
             }
         }
     }
